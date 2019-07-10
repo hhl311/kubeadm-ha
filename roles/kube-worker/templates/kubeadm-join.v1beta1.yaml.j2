@@ -32,7 +32,7 @@ authorization:
   webhook:
     cacheAuthorizedTTL: 5m0s
     cacheUnauthorizedTTL: 30s
-cgroupDriver: {{ DOCKER_CGROUP_DRIVER }}
+cgroupDriver: {{ CGROUP_DRIVER }}
 cgroupsPerQOS: true
 clusterDNS:
 - {{ CLUSTER_DNS_SERVICE_IP }}

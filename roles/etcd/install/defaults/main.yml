@@ -2,6 +2,9 @@
 ansible_become: true
 # 安装模式
 install_mode: online
+# 集群 container-runtime 支持: docker, containerd
+container_runtime: docker
+
 # Etcd使用的镜像
 etcd_image: gcr.azk8s.cn/google_containers/etcd:3.3.10
 # Pod根容器

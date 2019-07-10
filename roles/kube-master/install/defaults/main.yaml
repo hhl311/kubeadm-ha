@@ -2,6 +2,8 @@
 ansible_become: true
 # 安装模式
 install_mode: online
+# 集群 container-runtime 支持: docker, containerd
+container_runtime: docker
 
 #----------------------------------------------- 基础参数 -------------------------------------------------#
 # 当前节点ip

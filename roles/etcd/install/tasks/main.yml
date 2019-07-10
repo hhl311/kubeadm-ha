@@ -44,13 +44,29 @@
   register: kubelet_conf_stat
 
 - block:
-  - name: 获取 Docker Cgroup Driver 值
+  - name: 获取 Cgroup Driver 值
     shell: docker info --format '{{ '{{' }} json .CgroupDriver {{ '}}' }}' | cut -d'"' -f2
-    register: docker_cgroup_driver
-  
-  - name: 设置变量 DOCKER_CGROUP_DRIVER
-    set_fact: DOCKER_CGROUP_DRIVER="{{ docker_cgroup_driver.stdout }}"
+    register: cgroup_driver
+    when: container_runtime == 'docker'
+  - name: 设置变量 CGROUP_DRIVER
+    set_fact: 
+      CGROUP_DRIVER: "{{ cgroup_driver.stdout }}"
+    when: container_runtime == 'docker'
 
+  - name: 获取 Cgroup Driver 值
+    shell: crictl info | jq .config.systemdCgroup
+    register: cgroup_driver
+    when: container_runtime == 'containerd'
+  - name: 设置变量 CGROUP_DRIVER
+    set_fact: 
+      CGROUP_DRIVER: >-
+        {% if cgroup_driver.stdout == "true" -%}
+          systemd
+        {%- else -%}
+          cgroupfs
+        {%- endif %}
+    when: container_runtime == 'containerd'
+    
   - name: 生成临时 kubelet unit 文件
     template: 
       src: 20-kubelet-override.conf.j2

@@ -45,12 +45,28 @@
   register: kubelet_conf_stat
 
 - block:
-  - name: 获取 Docker Cgroup Driver 值
+  - name: 获取 Cgroup Driver 值
     shell: docker info --format '{{ '{{' }} json .CgroupDriver {{ '}}' }}' | cut -d'"' -f2
-    register: docker_cgroup_driver
+    register: cgroup_driver
+    when: container_runtime == 'docker'
+  - name: 设置变量 CGROUP_DRIVER
+    set_fact: 
+      CGROUP_DRIVER: "{{ cgroup_driver.stdout }}"
+    when: container_runtime == 'docker'
 
-  - name: 设置变量 DOCKER_CGROUP_DRIVER
-    set_fact: DOCKER_CGROUP_DRIVER="{{ docker_cgroup_driver.stdout }}"
+  - name: 获取 Cgroup Driver 值
+    shell: crictl info | jq .config.systemdCgroup
+    register: cgroup_driver
+    when: container_runtime == 'containerd'
+  - name: 设置变量 CGROUP_DRIVER
+    set_fact: 
+      CGROUP_DRIVER: >-
+        {% if cgroup_driver.stdout == "true" -%}
+          systemd
+        {%- else -%}
+          cgroupfs
+        {%- endif %}
+    when: container_runtime == 'containerd'
 
   - name: 生成临时 kubelet unit 文件
     template: 
@@ -87,21 +103,21 @@
   delay: 5
   when: inventory_hostname in groups['lb']
 
-- block:
-  - name: 移除临时 kubelet unit 文件
-    file: 
-      name: /etc/systemd/system/kubelet.service.d/20-kubelet-override.conf
-      state: absent
+# - block:
+#   - name: 移除临时 kubelet unit 文件
+#     file: 
+#       name: /etc/systemd/system/kubelet.service.d/20-kubelet-override.conf
+#       state: absent
 
-  - name: 重新加载 daemon
-    systemd:
-      daemon_reload: yes
+#   - name: 重新加载 daemon
+#     systemd:
+#       daemon_reload: yes
 
-  - name: 停止临时启动 kubelet
-    service:
-      name: kubelet
-      state: stopped
-      enabled: yes
-  when: 
-  - not kubelet_conf_stat.stat.exists
-  - inventory_hostname in (groups['kube-master'] + groups['kube-worker'] + groups['new-master'] + groups['new-worker'])
+#   - name: 停止临时启动 kubelet
+#     service:
+#       name: kubelet
+#       state: stopped
+#       enabled: yes
+#   when: 
+#   - not kubelet_conf_stat.stat.exists
+#   - inventory_hostname in (groups['kube-master'] + groups['kube-worker'] + groups['new-master'] + groups['new-worker'])

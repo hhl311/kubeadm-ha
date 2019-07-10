@@ -6,13 +6,12 @@
   - /etc/docker
   - "{{ docker_storage_dir }}"
 
-- name: 确认 Docker 配置是否有修改
+- name: 渲染 Docker 配置
   template:
     src: docker-daemon.json.j2
     dest: /etc/docker/daemon.json
     owner: root
     mode: 0644
-  register: configuration_result
 
 - name: 重新加载 daemon
   systemd:
@@ -35,9 +34,7 @@
       name: docker
       state: restarted
       enabled: yes
-  when: 
-  - configuration_result.changed
-  - '"active" not in docker_already_running.stdout'
+  when: '"running" not in container_runtime_already_running.stdout'
 
 - name: 设置 Docker 开机自启
   service:
@@ -50,3 +47,18 @@
     name: "{{ ansible_user }}"
     groups: docker
     append: yes
+
+- block:
+  - name: 确认远程目录是否存在
+    file:
+      path: "{{ offline_images_dest|dirname }}"
+      state: directory
+      mode: 0755
+  - name: 分发所需的容器镜像
+    copy: 
+      src: "{{ offline_images_src }}"
+      dest: "{{ offline_images_dest }}"
+      mode: 0755
+  - name: 加载所需的容器镜像
+    shell: "docker load -i {{ offline_images_dest }}"
+  when: install_mode != 'online'

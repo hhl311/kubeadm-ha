@@ -5,6 +5,9 @@ kube_pod_subnet: 10.244.0.0/18
 # 集群service ip段
 kube_service_subnet: 10.244.64.0/18
 
+# 集群 container-runtime 支持: docker, containerd
+container_runtime: docker
+
 # Docker版本
 # apt-cache madison docker-ce
 # yum list docker-ce --showduplicates --enablerepo=docker-ce | sort -r
@@ -38,8 +41,29 @@ docker_storage_dir: "/var/lib/docker"
 # 并行镜像下载数量
 docker_max_concurrent_downloads: 10
 
+# Pod根容器
+pod_infra_container_image: gcr.azk8s.cn/google_containers/pause:3.1
+
+containerd_crictl_url: https://github.com/kubernetes-sigs/cri-tools/releases/download/v1.15.0/crictl-v1.15.0-linux-amd64.tar.gz
+# containerd容器存储目录
+containerd_storage_dir: "/var/lib/containerd"
+
 install_mode: online
 # 离线模式时所需镜像源位置
 offline_images_src: /kubernetes/kubernetes-1.15.0.tar
 # 离线模式时分发镜像目的位置
 offline_images_dest: /kubernetes/kubernetes-1.15.0.tar
+
+CONTAINER_RUNTIME: >-
+  {% if container_runtime == "docker" %}
+    docker
+  {% else %}
+    remote
+  {% endif %}
+
+CONTAINER_RUNTIME_ENDPOINT: >-
+  {% if container_runtime == "docker" %}
+    unix:///var/run/dockershim.sock
+  {% else %}
+    unix:///run/containerd/containerd.sock
+  {% endif %}
