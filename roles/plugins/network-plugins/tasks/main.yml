@@ -13,6 +13,9 @@
   - include_tasks: kube-ovn.yml
     when: network_plugin == 'kube-ovn'
 
+  - include_tasks: cilium.yml
+    when: network_plugin == 'cilium'
+
   when: 
   - network_plugins_enabled|bool
   - inventory_hostname == groups['kube-master'][0]

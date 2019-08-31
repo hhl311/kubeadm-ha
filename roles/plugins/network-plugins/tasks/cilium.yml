@@ -1,0 +1,4 @@
+- name: 部署 cilium
+  shell: kubectl apply -f https://raw.githubusercontent.com/cilium/cilium/v1.5.7/examples/kubernetes/1.15/cilium.yaml
+
+

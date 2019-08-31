@@ -84,7 +84,7 @@ lb_mode: nginx
 lb_kube_apiserver_healthcheck_port: 8081
 
 # 使用负载均衡后集群 apiserver ip
-# lb_kube_apiserver_ip: "192.168.56.15"
+# lb_kube_apiserver_ip: "192.168.33.15"
 
 # 使用负载均衡后集群 apiserver port
 lb_kube_apiserver_port: 8443
