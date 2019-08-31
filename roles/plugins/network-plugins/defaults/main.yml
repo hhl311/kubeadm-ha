@@ -50,5 +50,5 @@ kube_ovn_enable_mirror: false
 
 cilium_init_image: cilium/cilium-init:2019-04-05
 cilium_image: cilium/cilium:v1.5.7
-cilium_init_operator_image: cilium/operator:v1.5.7
+cilium_operator_image: cilium/operator:v1.5.7
 cilium_init_etcd_operator_image: cilium/cilium-etcd-operator:v2.0.6

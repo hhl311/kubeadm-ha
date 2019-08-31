@@ -1,4 +1,18 @@
+- name: 渲染 cilium 配置文件
+  template:
+    src: cilium/cilium.yaml.j2
+    dest: /etc/kubernetes/plugins/network-plugin/cilium.yaml
+  register: cilium_manifest
+
 - name: 部署 cilium
   shell: kubectl apply -f https://raw.githubusercontent.com/cilium/cilium/v1.5.7/examples/kubernetes/1.15/cilium.yaml
+  when: cilium_manifest.changed
 
-
+- name: 轮询等待 cilium 运行
+  shell: kubectl get pod --all-namespaces -o wide | grep 'cilium' | awk '{print $4}'
+  register: pod_status
+  until: "'Running' in pod_status.stdout"
+  retries: 12
+  delay: 5
+  ignore_errors: true
+  when: wait_plugins_ready|bool
