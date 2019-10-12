@@ -1,7 +1,7 @@
-# Calico Version v3.8.2
-# https://docs.projectcalico.org/v3.8/releases#v3.8.2
+# Calico Version v3.9.1
+# https://docs.projectcalico.org/v3.9/releases#v3.9.1
 # This manifest includes the following component versions:
-#   calico/ctl:v3.8.2
+#   calico/ctl:v3.9.1
 
 apiVersion: v1
 kind: ServiceAccount
@@ -62,6 +62,12 @@ rules:
       - list
       - update
       - delete
+  - apiGroups: ["networking.k8s.io"]
+    resources:
+      - networkpolicies
+    verbs:
+      - get
+      - list
 
 ---
 

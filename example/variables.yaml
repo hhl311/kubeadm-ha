@@ -90,10 +90,10 @@ lb_kube_apiserver_healthcheck_port: 8081
 lb_kube_apiserver_port: 8443
 
 # 使用nginx进行apiserver负载时使用的nginx镜像
-lb_nginx_image: dockerhub.azk8s.cn/library/nginx:1.15.12-alpine
+lb_nginx_image: dockerhub.azk8s.cn/library/nginx:1.17.4-alpine
 
 # 使用haproxy进行apiserver负载时使用的haproxy镜像
-lb_haproxy_image: dockerhub.azk8s.cn/library/haproxy:1.9.8-alpine
+lb_haproxy_image: dockerhub.azk8s.cn/library/haproxy:2.0.7-alpine
 # haproxy监控绑定端口
 lb_haproxy_stats_bind_address: 9090
 # haproxy监控访问路径
@@ -116,8 +116,12 @@ enabel_ingress_nodeport_lb: false
 # 启用 ingress tls NodePort服务的负载均衡 (true/false)
 enabel_ingress_tls_nodeport_lb: false
 
+# 使用haproxy进行apiserver负载时使用的haproxy镜像
+lb_envoy_image: dockerhub.azk8s.cn/envoyproxy/envoy-alpine:v1.11.1
+lb_envoy_admin_address_port: 9090
+
 # 使用 vip 负载时使用的 keepalived 镜像
-lb_keepalived_image: dockerhub.azk8s.cn/osixia/keepalived:2.0.16
+lb_keepalived_image: dockerhub.azk8s.cn/osixia/keepalived:2.0.17
 # keepalived auth_type 的 password
 lb_keepalived_password: "d0cker"
 # 区分多个 instance 的 VRRP 组播，同网段不能重复，取值在0-255之间
@@ -132,7 +136,7 @@ etcd_certs_expired: 3650
 # Etcd根证书过期时间（天）
 etcd_ca_certs_expired: 36500
 # Etcd使用的镜像
-etcd_image: gcr.azk8s.cn/google_containers/etcd:3.3.10
+etcd_image: gcr.azk8s.cn/google_containers/etcd:3.3.15-0
 # Etcd 数据根目录
 etcd_data_dir: "/var/lib/etcd"
 # Etcd 每日备份时间，默认3，即凌晨3点，取值范围0-23
@@ -167,7 +171,7 @@ pod_infra_container_image: gcr.azk8s.cn/google_containers/pause:3.1
 kube_image_repository: gcr.azk8s.cn/google_containers
 
 # kubernetes版本
-kube_version: 1.15.3
+kube_version: 1.15.4
 
 # 集群内部dns域名
 kube_dns_domain: cluster.local
@@ -222,15 +226,15 @@ flannel_image: quay.azk8s.cn/coreos/flannel:v0.11.0-amd64
 # calico mtu
 calico_veth_mtu: 1440
 # calico 相关镜像
-calico_typha_image: dockerhub.azk8s.cn/calico/typha:v3.8.2
-calico_cni_image: dockerhub.azk8s.cn/calico/cni:v3.8.2
-calico_node_image: dockerhub.azk8s.cn/calico/node:v3.8.2
-calico_kube_controllers_image: dockerhub.azk8s.cn/calico/kube-controllers:v3.8.2
-calico_pod2daemon_flexvol_image: dockerhub.azk8s.cn/calico/pod2daemon-flexvol:v3.8.2
+calico_typha_image: dockerhub.azk8s.cn/calico/typha:v3.9.1
+calico_cni_image: dockerhub.azk8s.cn/calico/cni:v3.9.1
+calico_node_image: dockerhub.azk8s.cn/calico/node:v3.9.1
+calico_kube_controllers_image: dockerhub.azk8s.cn/calico/kube-controllers:v3.9.1
+calico_pod2daemon_flexvol_image: dockerhub.azk8s.cn/calico/pod2daemon-flexvol:v3.9.1
 # 设置 Felix 日志级别(debug, info, warning, error)
 calico_felix_log_level: "warning"
 # calicoctl image 地址
-calicoctl_image: dockerhub.azk8s.cn/calico/ctl:v3.8.2
+calicoctl_image: dockerhub.azk8s.cn/calico/ctl:v3.9.1
 
 # kube-ovn master 节点
 kube_ovn_master:
@@ -261,7 +265,7 @@ ingress_controller_http_nodeport: 30080
 ingress_controller_https_nodeport: 30443
 
 # nginx-ingress 镜像地址
-nginx_ingress_image: quay.azk8s.cn/kubernetes-ingress-controller/nginx-ingress-controller:0.25.1
+nginx_ingress_image: quay.azk8s.cn/kubernetes-ingress-controller/nginx-ingress-controller:0.26.1
 
 # traefik默认证书过期时间（天）
 traefik_certs_expired: 3650
@@ -279,7 +283,7 @@ kubernetesui_dashboard_enabled: true
 kubernetesui_dashboard_certs_expired: 3650
 
 # kubernetes-dashboard 镜像地址
-kubernetesui_dashboard_image: dockerhub.azk8s.cn/kubernetesui/dashboard:v2.0.0-beta3
+kubernetesui_dashboard_image: dockerhub.azk8s.cn/kubernetesui/dashboard:v2.0.0-beta4
 kubernetesui_metrics_scraper_image: dockerhub.azk8s.cn/kubernetesui/metrics-scraper:v1.0.1
 
 # ------------------------ #
@@ -290,7 +294,7 @@ kubernetesui_metrics_scraper_image: dockerhub.azk8s.cn/kubernetesui/metrics-scra
 metrics_server_enabled: true
 
 # metrics-server image地址
-metrics_server_image: gcr.azk8s.cn/google_containers/metrics-server-amd64:v0.3.3
+metrics_server_image: gcr.azk8s.cn/google_containers/metrics-server-amd64:v0.3.5
 
 # ------------------------ #
 # cert-manager 相关配置
